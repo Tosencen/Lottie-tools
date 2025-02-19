@@ -1,0 +1,435 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html, body {
+  overflow: hidden;
+  height: 100vh;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+  background: #f5f5f5;
+  -webkit-app-region: drag;
+  transition: background-color 0.3s ease;
+}
+
+body.dark-mode {
+  background: #1a1a1a;
+}
+
+.container {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  padding: 20px;
+  padding-top: 40px;
+  overflow: hidden;
+}
+
+.drop-zone {
+  flex: 1;
+  border: 2px dashed #ccc;
+  border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: white;
+  -webkit-app-region: no-drag;
+  overflow: hidden;
+  transition: background-color 0.3s ease, border-color 0.3s ease;
+}
+
+.dark-mode .drop-zone {
+  background: #2d2d2d;
+  border-color: #444;
+}
+
+.drop-zone.drag-over {
+  border-color: #2196f3;
+  background: #e3f2fd;
+}
+
+.drop-zone h2 {
+  color: #666;
+  margin-bottom: 10px;
+  transition: color 0.3s ease;
+}
+
+.drop-zone p {
+  color: #999;
+  transition: color 0.3s ease;
+}
+
+.dark-mode .drop-zone h2 {
+  color: #e0e0e0;
+}
+
+.dark-mode .drop-zone p {
+  color: #888;
+}
+
+.size-info {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  padding: 5px 10px;
+  border-radius: 4px;
+  background: rgba(0, 0, 0, 0.4);
+  color: white;
+  font-size: 14px;
+  display: none;
+  z-index: 1000;
+  -webkit-app-region: no-drag;
+}
+
+#lottie-container {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 1;
+  margin: auto;
+  display: none;
+  border-radius: 12px;
+  background-color: transparent;
+  -webkit-app-region: drag;
+  pointer-events: none;
+}
+
+.controls {
+  display: none;
+  gap: 10px;
+  justify-content: center;
+  padding-bottom: 50px;
+}
+
+.controls button {
+  padding: 10px 20px;
+  margin: 0 5px;
+  border: none;
+  border-radius: 4px;
+  background-color: #2196f3;
+  color: white;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.controls button:hover {
+  background-color: #1976d2;
+}
+
+.controls button:active {
+  background-color: #0d47a1;
+}
+
+.left-controls {
+  display: none;
+  flex-direction: column;
+  gap: 10px;
+  position: fixed;
+  left: 20px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: white;
+  padding: 10px;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  z-index: 2;
+  transition: background-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.dark-mode .left-controls {
+  background: #2d2d2d;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+}
+
+.color-picker {
+  display: none;
+  flex-direction: column;
+  gap: 10px;
+  position: fixed;
+  right: 20px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: white;
+  padding: 10px;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  z-index: 2;
+  transition: background-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.dark-mode .color-picker {
+  background: #2d2d2d;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+}
+
+.control-btn {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  cursor: pointer;
+  border: 2px solid #ccc;
+  transition: all 0.3s ease;
+  background-color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  -webkit-app-region: no-drag;
+}
+
+.control-btn:hover {
+  transform: scale(1.1);
+  border-color: #2196f3;
+}
+
+.control-btn.active {
+  border-color: #2196f3;
+  box-shadow: 0 0 5px rgba(33, 150, 243, 0.5);
+}
+
+.control-btn svg {
+  width: 16px;
+  height: 16px;
+  fill: #666;
+  transition: fill 0.3s ease;
+}
+
+.dark-mode .control-btn svg {
+  fill: #666;
+}
+
+.control-btn:hover svg {
+  fill: #2196f3;
+}
+
+.control-btn[data-tooltip],
+.color-btn[data-tooltip] {
+  position: relative;
+}
+
+.control-btn[data-tooltip]::after,
+.color-btn[data-tooltip]::after {
+  content: attr(data-tooltip);
+  position: absolute;
+  background: rgba(0, 0, 0, 0.8);
+  color: white;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  white-space: nowrap;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  z-index: 1000;
+}
+
+.control-btn[data-tooltip]::after {
+  left: calc(100% + 8px);
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.color-btn[data-tooltip]::after {
+  right: calc(100% + 8px);
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.control-btn[data-tooltip]:hover::after,
+.color-btn[data-tooltip]:hover::after {
+  opacity: 1;
+}
+
+.color-btn {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  cursor: pointer;
+  border: 2px solid #ccc;
+  transition: all 0.3s ease;
+  -webkit-app-region: no-drag;
+}
+
+.color-btn:hover {
+  transform: scale(1.1);
+  border-color: #2196f3;
+}
+
+.color-btn.active {
+  border-color: #2196f3;
+  box-shadow: 0 0 5px rgba(33, 150, 243, 0.5);
+}
+
+.color-btn.transparent {
+  background: white;
+  position: relative;
+  transition: background-color 0.3s ease;
+}
+
+.dark-mode .color-btn.transparent {
+  background: #2d2d2d;
+}
+
+.color-btn.transparent::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  background: linear-gradient(45deg, #ccc 25%, transparent 25%, transparent 75%, #ccc 75%, #ccc);
+  background-size: 8px 8px;
+  background-position: 0 0, 4px 4px;
+}
+
+.dark-mode .color-btn.transparent {
+  border-color: #444;
+}
+
+.color-btn.custom {
+  position: relative;
+  overflow: hidden;
+  background: conic-gradient(from 0deg, red, yellow, lime, aqua, blue, magenta, red);
+  border: 2px solid #fff;
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
+}
+
+.color-btn.custom.active {
+  border-color: #2196f3;
+  box-shadow: 0 0 15px rgba(33, 150, 243, 0.7);
+  transform: scale(1.05);
+}
+
+.custom-color-input {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  cursor: pointer;
+  z-index: 2;
+}
+
+.color-dialog {
+  display: none;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: white;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  z-index: 1000;
+}
+
+.dark-mode .color-dialog {
+  background: #2d2d2d;
+  color: #fff;
+}
+
+.color-dialog input[type="text"] {
+  width: 200px;
+  padding: 8px;
+  margin: 10px 0;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 14px;
+}
+
+.dark-mode .color-dialog input[type="text"] {
+  background: #1a1a1a;
+  border-color: #444;
+  color: #fff;
+}
+
+.color-dialog button {
+  padding: 8px 16px;
+  background: #2196f3;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.color-dialog button:hover {
+  background: #1976d2;
+}
+
+.color-dialog.show {
+  display: block;
+}
+
+.color-btn.black {
+  background-color: #000;
+}
+
+.color-btn.red {
+  background-color: #f44336;
+}
+
+.color-btn.green {
+  background-color: #4caf50;
+}
+
+.color-btn.blue {
+  background-color: #2196f3;
+}
+
+.file-select-btn {
+  background: white;
+  border: 2px solid #ccc;
+  border-radius: 50%;
+  cursor: pointer;
+  margin-top: 20px;
+  padding: 15px;
+  transition: all 0.3s ease;
+  -webkit-app-region: no-drag;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.dark-mode .file-select-btn {
+  background: #2d2d2d;
+  border-color: #444;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+.file-select-btn:hover {
+  transform: scale(1.2);
+  border-color: #2196f3;
+  box-shadow: 0 4px 12px rgba(33, 150, 243, 0.2);
+}
+
+.file-select-btn svg {
+  width: 64px;
+  height: 64px;
+  transition: all 0.3s ease;
+}
+
+.file-select-btn:hover svg path {
+  fill: #2196f3;
+}
+
+.file-select-btn svg path {
+  fill: #666;
+  transition: fill 0.3s ease;
+}
+
+.dark-mode .file-select-btn svg path {
+  fill: #e0e0e0;
+}
+.dark-mode .drop-zone.drag-over {
+  border-color: #64b5f6;
+  background: #1e3a4f;
+}

@@ -1,0 +1,4 @@
+dist/Lottie[[:space:]]Preview-1.0.0-arm64.dmg.blockmap filter=lfs diff=lfs merge=lfs -text
+dist/builder-debug.yml filter=lfs diff=lfs merge=lfs -text
+dist/builder-effective-config.yaml filter=lfs diff=lfs merge=lfs -text
+dist/mac-arm64 filter=lfs diff=lfs merge=lfs -text
